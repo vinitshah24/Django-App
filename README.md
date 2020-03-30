@@ -20,7 +20,7 @@ Install requirements for the project:<br />
 pip install -r requirements.txt
 ```
  
-Run the following commands:<br />
+Navigate to src/ directory and run the following commands:<br />
 ```
 python manage.py migrate
 python manage.py createsuperuser
