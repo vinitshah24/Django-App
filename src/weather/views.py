@@ -3,6 +3,7 @@ import requests
 from .models import City
 from .forms import CityForm
 import os
+import json
 # Create your views here.
 
 
@@ -17,16 +18,19 @@ def index(request):
 
     form = CityForm()
     cities = City.objects.all()
+
     weather_data = []
     for city in cities:
         r = requests.get(weather_url.format(city)).json()
+        with open('test.json', 'w+', encoding='utf-8') as json_file:
+            json.dump(r, json_file, ensure_ascii=False, indent=2)
         weather_dict = {
-            'city': city.name,
+            'city': city.name.title(),
             'temperature': r['main']['temp'],
-            'description': r['weather'][0]['description'],
+            'feels_like': r['main']['feels_like'],
+            'description': r['weather'][0]['description'].title(),
             'icon': r['weather'][0]['icon']
         }
         weather_data.append(weather_dict)
-    print(weather_data)
     context = {'weather_data': weather_data, 'form': form}
     return render(request, 'index.html', context)
