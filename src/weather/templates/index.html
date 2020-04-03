@@ -57,7 +57,7 @@
 </nav>
 
 <body>
-    <div class="container py-4">
+    <div class="container pt-4">
         <div class="row">
             <div class="col-md-12 col-lg-12">
                 <form method="POST">
@@ -65,8 +65,16 @@
                         {% csrf_token %}
                         {{ form.name }}
                     </div>
-                    <button type="submit" class="btn btn-secondary btn-sm mt-2">Add City</button>
+                    <button type="submit" class="btn btn-success btn-sm mt-2">Add City</button>
                 </form>
+                {% if message %}
+                <div class="alert {{ alert }} alert-dismissible fade show mt-3" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -76,14 +84,20 @@
             <div class="row">
                 {% for city_weather in weather_data %}
                 <div class="col-md-4">
-                    <div class="card mb-4 shadow-sm">
+                    <div class="card-horizontal mb-4 shadow-sm">
+                        <a href="{% url 'delete_city' city_weather.city %}">
+                            <button type="button" class="close mr-2 mt-2" aria-label="Close">
+                                <span aria-hidden="true" class="text-danger">&times;</span>
+                            </button>
+                        </a>
                         <img src="http://openweathermap.org/img/w/{{ city_weather.icon }}.png" alt="Image"
-                            class="img-responsive img-fluid pull-left border ml-4 mt-3" width="100px" height="100px">
+                            class="img-responsive img-fluid pull-left border ml-4 mt-3" width="50px" height="50px">
                         <div class="card-body pull-right">
                             <h4 class="title">{{ city_weather.city }}</h4>
-                            <p class="mb-0"><b>Tempreature: </b>{{ city_weather.temperature }}° F</p>
+                            <p class="mb-0"><b>Temperature: </b>{{ city_weather.temperature }}° F</p>
                             <p class="mb-0"> <b>Feels Like: </b>{{ city_weather.feels_like }}° F</p>
-                            <p class="mb-0"><b>Desription: </b>{{ city_weather.description }}</p>
+                            <p class="mb-0"><b>Description: </b>{{ city_weather.description }}</p>
+                            <!--button type="button" class="btn btn-outline-danger btn-sm mt-2">Remove City</button-->
                         </div>
                     </div>
                 </div>
@@ -92,8 +106,36 @@
         </div>
     </div>
 
-    <footer class="footer">
-        <div class="footer text-center font-small bg-dark py-0" style="color:aliceblue">
+    <!--div class="album py-3">
+        <div class="container">
+            <div class="row">
+                {% for city_weather in weather_data %}
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="row no-gutters">
+                            <div class="col-md-2">
+                                <img src="http://openweathermap.org/img/w/{{ city_weather.icon }}.png" alt="Image"
+                                    class="img-responsive img-fluid mt-4 " width="70px"
+                                    height="70px">
+                            </div>
+                            <div class="col-md-10">
+                                <div class="card-body">
+                                    <h4 class="title">{{ city_weather.city }}</h4>
+                                    <p class="mb-0"><b>Temperature: </b>{{ city_weather.temperature }}° F</p>
+                                    <p class="mb-0"> <b>Feels Like: </b>{{ city_weather.feels_like }}° F</p>
+                                    <p class="mb-0"><b>Description: </b>{{ city_weather.description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div-->
+
+    <footer class="footer" style="background-color: #212529;">
+        <div class="footer text-center font-small py-0" style="color:aliceblue">
             © Weather App 2020
         </div>
     </footer>

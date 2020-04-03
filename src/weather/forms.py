@@ -7,5 +7,5 @@ class CityForm(ModelForm):
         model = City
         fields = ['name']
         widgets = {
-            'name': TextInput(attrs={'class': 'form-control', 'placeholder': 'City Name'})
+            'name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter City Name'})
         }

@@ -1,20 +1,47 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from dotenv import load_dotenv
 import requests
+import json
+import os
+
 from .models import City
 from .forms import CityForm
-import os
-import json
-# Create your views here.
+
+env_file = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '.env')
+)
+load_dotenv(env_file)
 
 
 def index(request):
     weather_url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=' + \
-        os.getenv('WEATHER_APP_KEY')
+        os.environ.get('WEATHER_APP_KEY')
+
+    error_msg = ''
+    actions_msg = ''
+    alert = ''
 
     # Saves form data directly to the table
     if request.method == 'POST':
         form = CityForm(request.POST)
-        form.save()
+        if form.is_valid():
+            new_city = form.cleaned_data['name'].title()
+            existing_city_count = City.objects.filter(name=new_city).count()
+            if existing_city_count == 0:
+                r = requests.get(weather_url.format(new_city)).json()
+                if r['cod'] == 200:
+                    form.save()
+                else:
+                    error_msg = 'Invalid City Name!'
+            else:
+                error_msg = 'City Already Added!'
+
+    if error_msg:
+        actions_msg = error_msg
+        alert = 'alert-danger'
+    else:
+        actions_msg = 'City Added Successfully'
+        alert = 'alert-success'
 
     form = CityForm()
     cities = City.objects.all()
@@ -32,5 +59,15 @@ def index(request):
             'icon': r['weather'][0]['icon']
         }
         weather_data.append(weather_dict)
-    context = {'weather_data': weather_data, 'form': form}
+    context = {
+        'weather_data': weather_data,
+        'form': form,
+        'message': actions_msg,
+        'alert': alert,
+    }
     return render(request, 'index.html', context)
+
+
+def delete_city(request, city):
+    City.objects.get(name=city.lower()).delete()
+    return redirect('home')
