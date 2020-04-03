@@ -18,7 +18,7 @@ def index(request):
         os.environ.get('WEATHER_APP_KEY')
 
     error_msg = ''
-    actions_msg = ''
+    message = ''
     alert = ''
 
     # Saves form data directly to the table
@@ -36,11 +36,11 @@ def index(request):
             else:
                 error_msg = 'City Already Added!'
 
-    if error_msg:
-        actions_msg = error_msg
+    if error_msg == 'Invalid City Name!':
+        message = error_msg
         alert = 'alert-danger'
-    else:
-        actions_msg = 'City Added Successfully'
+    elif error_msg == 'City Already Added!':
+        message = 'City Added Successfully'
         alert = 'alert-success'
 
     form = CityForm()
@@ -49,8 +49,6 @@ def index(request):
     weather_data = []
     for city in cities:
         r = requests.get(weather_url.format(city)).json()
-        with open('test.json', 'w+', encoding='utf-8') as json_file:
-            json.dump(r, json_file, ensure_ascii=False, indent=2)
         weather_dict = {
             'city': city.name.title(),
             'temperature': r['main']['temp'],
@@ -62,7 +60,7 @@ def index(request):
     context = {
         'weather_data': weather_data,
         'form': form,
-        'message': actions_msg,
+        'message': message,
         'alert': alert,
     }
     return render(request, 'index.html', context)
